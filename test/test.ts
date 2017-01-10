@@ -72,11 +72,33 @@ async function testGeneratingSchema(db: Database) {
     await compare('./test/example/maxi.ts', outputFile, formattedOutput)
 }
 
+async function testGenerateWithoutNamespace(db: Database) {
+    await loadSchema('test/sans_namespace_schema.sql')
+    console.log('loaded sans_namespace schema')
+
+    let outputFile = (process.env.CIRCLE_ARTIFACTS || './test/artifacts') + '/sansNamespace.ts'
+    let formattedOutput = await typescriptOfSchema(
+        db,
+        '',
+        [],
+        'sans_namespace',
+        extractCommand(
+            ['node', 'schemats', 'generate', '-c',
+            'postgres://secretUser:secretPassword@localhost/test',
+            '-s', 'sans_namespace', '-o', './test/sansNamespace.ts'],
+            'postgres://secretUser:secretPassword@localhost/test'
+        ),
+        '2016-12-07 13:17:46'
+    )
+    await compare('./test/example/sansNamespace.ts', outputFile, formattedOutput)
+}
+
 (async () => {
     try {
         let db = new Database(process.env.DATABASE_URL)
         await testGeneratingTables(db)
         await testGeneratingSchema(db)
+        await testGenerateWithoutNamespace(db)
         process.exit(0)
     } catch (e) {
         console.error(e)

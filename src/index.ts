@@ -34,6 +34,10 @@ export function getTime() {
     return `${yyyy}-${MM}-${dd} ${hh}:${mm}:${ss}`
 }
 
+function wrapWithNamespace(typescriptString: string, namespace: string): string {
+    return `export namespace ${namespace} { ${typescriptString} }`
+}
+
 export async function typescriptOfSchema(db: Database, namespace: string, tables: string[], schema: string = 'public',
                                          commandRan: string, time: string): Promise<string> {
     if (tables.length === 0) {
@@ -45,21 +49,32 @@ export async function typescriptOfSchema(db: Database, namespace: string, tables
     const interfaces = await Promise.all(interfacePromises)
         .then(tsOfTable => tsOfTable.reduce((init, tsOfTable) => init + tsOfTable, ''))
 
-    let output = `
-            /**
-             * AUTO-GENERATED FILE @ ${time} - DO NOT EDIT!
-             *
-             * This file was generated with schemats node package:
-             * $ schemats ${commandRan}
-             *
-             * Re-run the command above.
-             *
-             */
-            export namespace ${namespace} {
-            ${enumTypes}
-            ${interfaces}
-            }
-        `
+    let header = `
+        /**
+         * AUTO-GENERATED FILE @ ${time} - DO NOT EDIT!
+         *
+         * This file was generated with schemats node package:
+         * $ schemats ${commandRan}
+         *
+         * Re-run the command above.
+         *
+         */
+    `
+
+    let typesAndInterfaces = `
+        ${enumTypes}
+        ${interfaces}
+    `
+
+    let output = ''
+
+    if (namespace) {
+        output = header + wrapWithNamespace(typesAndInterfaces, namespace)
+    } else {
+        output = header + typesAndInterfaces
+    }
+
+    console.log(output)
 
     let formatterOption = {
         replace: false,
