@@ -78,8 +78,6 @@ export async function typescriptOfSchema(db: Database, namespace: string, tables
         output = header + typesAndInterfaces
     }
 
-    console.log(output)
-
     let formatterOption = {
         replace: false,
         verify: false,
@@ -89,7 +87,7 @@ export async function typescriptOfSchema(db: Database, namespace: string, tables
         tsfmt: true
     }
 
-    const processedResult = await processString('schema.ts', output, formatterOption)
+    const processedResult = await processString('./schema.ts', output, formatterOption)
     return processedResult.dest
 }
 
