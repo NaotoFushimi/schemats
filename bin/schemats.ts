@@ -11,6 +11,7 @@ import { typescriptOfSchema, getDatabase, extractCommand } from '../src/index'
 interface SchematsConfig {
     conn: string,
     table: string[] | string,
+    excludes: string[] | string,
     schema: string,
     namespace: string,
     output: string
@@ -34,6 +35,8 @@ let argv: SchematsConfig = yargs
     .describe('t', 'table name')
     .alias('s', 'schema')
     .nargs('s', 1)
+    .describe('excludes', 'excludes tables')
+    .nargs('excludes', 1)
     .describe('s', 'schema name')
     .demand('n')
     .alias('n', 'namespace')
