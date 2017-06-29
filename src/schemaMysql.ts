@@ -40,7 +40,7 @@ export class MysqlDatabase implements Database {
                     column.tsType = 'number'
                     return column
                 case 'tinyint':
-                    column.tsType = 'boolean'
+                    column.tsType = 'number'
                     return column
                 case 'json':
                     column.tsType = 'Object'
